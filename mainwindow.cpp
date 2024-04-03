@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     sqlite = new Sqlite(surface, listSave);
     surfaceView = new SurfaceView(scene, surface);
 
+    //connect(this, &MainWindow::showSurface, surfaceView, &SurfaceView::drawSurface);
+
     ui->grSurface->setScene(scene);
     ui->grSurface->setTransformationAnchor(QGraphicsView::NoAnchor);
     ui->grSurface->setRenderHint(QPainter::Antialiasing);
@@ -139,7 +141,7 @@ void MainWindow::showSurface(bool afterRain) {
 
 void MainWindow::on_btnRandom_clicked() {
     surface->randSurface();
-    showSurface(true);
+    showSurface(false);
 }
 
 void MainWindow::on_btnStart_clicked() {

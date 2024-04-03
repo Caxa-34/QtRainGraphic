@@ -10,6 +10,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QColor>
+#include <QtConcurrent>
 #include <random>
 #include <vector>
 
@@ -33,11 +34,7 @@ public:
 
 private slots:
     void on_btnApplyTile_clicked();
-
-private slots:
     void on_listSave_itemDoubleClicked(QListWidgetItem *item);
-
-private slots:
     void on_spbWidth_valueChanged(int arg1);
     void on_spbHeight_valueChanged(int arg1);
     void on_btnSaveIntoDB_clicked();

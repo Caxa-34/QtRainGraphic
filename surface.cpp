@@ -125,13 +125,43 @@ int minInTiles(std::vector<Tile*> tiles) {
 
 void Surface::calculate() {
     clearWater();
-    getValues();
+
+    int cntColumn = width / 10;
+    int cntRow = height / 10;
+    int lastWidth = width - 10 * cntColumn;
+    int lastHeight = height - 10 * cntRow;
+
+    std::vector<QFuture<void>> futures;
+
+    for (int i = 0; i < cntColumn; i++)
+        for (int j = 0; j < cntRow; j++) {
+            futures.push_back(QtConcurrent::run(this, &Surface::calculatePart, i*10, j*10, 10, 10));
+        }
+    if (lastHeight > 0)
+        for (int i = 0; i < cntColumn; i++) {
+            futures.push_back(QtConcurrent::run(this, &Surface::calculatePart, i*10, cntRow*10, 10, lastHeight));
+        }
+    if (lastWidth > 0)
+        for (int j = 0; j < cntRow; j++) {
+            futures.push_back(QtConcurrent::run(this, &Surface::calculatePart, cntColumn*10, j*10, lastWidth, 10));
+        }
+    if (lastWidth > 0 && lastHeight > 0)
+        futures.push_back(QtConcurrent::run(this, &Surface::calculatePart, cntColumn*10, cntRow*10, lastWidth, lastHeight));
+
+    // Ожидаем завершения всех потоков
+    for (auto& future : futures) {
+        future.waitForFinished();
+    }
+}
+
+void Surface::calculatePart(int x, int y, int widthPart, int heightPart) {
     for (int numWater = 0; numWater < tilesHeight; numWater++) {
-        for (int xTile = 1; xTile < width - 1; xTile++)
-            for (int yTile = 1; yTile < height - 1; yTile++) {
-                tilesPath = std::vector<Tile*>();
+        for (int xTile = x; xTile < widthPart + x; xTile++)
+            for (int yTile = y; yTile < heightPart + y; yTile++) {
+                qDebug() << xTile << yTile;
+                std::vector<Tile*> tilesPath = std::vector<Tile*>();
                 Tile *curTile = tiles[xTile][yTile];
-                bool path = calculateWater(curTile);
+                bool path = calculateWater(curTile, &tilesPath);
                 if (!path) {
                     int minInPath = minInTiles(tilesPath);
                     for (int i = 0; i < tilesPath.size(); i++) {
@@ -144,36 +174,38 @@ void Surface::calculate() {
                 }
             }
     }
-
 }
 
-bool Surface::calculateWater(Tile* currentTile) {
+
+
+bool Surface::calculateWater(Tile* currentTile, std::vector<Tile*> *tilesPath) {
     if (atBorder(currentTile)) return true;
     int heightWater = currentTile->heightWithWater + 1;
-    tilesPath.push_back(currentTile);
+    tilesPath->push_back(currentTile);
 
     bool path1 = false, path2 = false, path3 = false, path4 = false;
-    if (std::find(tilesPath.begin(), tilesPath.end(), currentTile->neighbors[0]) == tilesPath.end()
+    if (std::find(tilesPath->begin(), tilesPath->end(), currentTile->neighbors[0]) == tilesPath->end()
             && currentTile->neighbors[0]->heightWithWater < heightWater) {
-        path1 = calculateWater(currentTile->neighbors[0]);
+        path1 = calculateWater(currentTile->neighbors[0], tilesPath);
     }
-    if (std::find(tilesPath.begin(), tilesPath.end(), currentTile->neighbors[1]) == tilesPath.end()
+    if (std::find(tilesPath->begin(), tilesPath->end(), currentTile->neighbors[1]) == tilesPath->end()
             && currentTile->neighbors[1]->heightWithWater < heightWater) {
-        path2 = calculateWater(currentTile->neighbors[1]);
+        path2 = calculateWater(currentTile->neighbors[1], tilesPath);
     }
-    if (std::find(tilesPath.begin(), tilesPath.end(), currentTile->neighbors[2]) == tilesPath.end()
+    if (std::find(tilesPath->begin(), tilesPath->end(), currentTile->neighbors[2]) == tilesPath->end()
             && currentTile->neighbors[2]->heightWithWater < heightWater) {
-        path3 = calculateWater(currentTile->neighbors[2]);
+        path3 = calculateWater(currentTile->neighbors[2], tilesPath);
     }
-    if (std::find(tilesPath.begin(), tilesPath.end(), currentTile->neighbors[3]) == tilesPath.end()
+    if (std::find(tilesPath->begin(), tilesPath->end(), currentTile->neighbors[3]) == tilesPath->end()
             && currentTile->neighbors[3]->heightWithWater < heightWater) {
-        path4 = calculateWater(currentTile->neighbors[3]);
+        path4 = calculateWater(currentTile->neighbors[3], tilesPath);
     }
     if (path1 || path2 || path3 || path4) return true;
     return false;
 }
 
 std::vector<std::vector<Tile*>> Surface::getSurface(bool afterRain) {
+    getValues();
     if (afterRain) calculate();
     return tiles;
 }

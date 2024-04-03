@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <QDebug>
+#include <QtConcurrent>
 
 ///
 /// \brief Класс поверхности
@@ -17,11 +18,6 @@ private:
     /// \brief Тайлы поверхности
     ///
     std::vector<std::vector<Tile*>> tiles;
-
-    ///
-    /// \brief Тайлы пути капли воды
-    ///
-    std::vector<Tile*> tilesPath;
 
     ///
     /// \brief Функция очистки поверхности от воды
@@ -55,12 +51,19 @@ private:
     /// \param Тайл в котором появляется блок воды
     /// \return Возвращает true - если вода смогла вытечь с поверхности, false - если вода осталась на поверхности
     ///
-    bool calculateWater(Tile* currentTile);
+    bool calculateWater(Tile* currentTile, std::vector<Tile*> *tilesPath);
 
     ///
     /// \brief Функция вычисления дождя
     ///
     void calculate();
+
+    ///
+    /// \brief Функция вычисления дождя в определенной части
+    /// \param Начальная Х координата части
+    /// \param Начальная У координата части
+    ///
+    void calculatePart(int x, int y, int widthPart, int heightPart);
 
 public:
 

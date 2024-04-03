@@ -9,8 +9,10 @@
 ///
 /// \brief Класс для обработки сцены с отображением поверхности
 ///
-class SurfaceView
+class SurfaceView : public QObject
 {
+    Q_OBJECT
+
 private:
     ///
     /// \brief Сцена для отображения поверхности
@@ -38,6 +40,7 @@ private:
     std::vector<std::vector<QGraphicsRectItem*>> rectTiles;
 
 public:
+
     ///
     /// \brief Отображение поверхности
     ///
