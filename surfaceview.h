@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
+#include <QLabel>
 #include <surface.h>
 #include <vector>
 
@@ -30,6 +31,11 @@ private:
     Surface *surface;
 
     ///
+    /// \brief Надпись для вывода общего объёма воды
+    ///
+    QLabel *txtTotal;
+
+    ///
     /// \brief Массив из тайлов поверхности
     ///
     std::vector<std::vector<Tile*>> tiles;
@@ -39,12 +45,30 @@ private:
     ///
     std::vector<std::vector<QGraphicsRectItem*>> rectTiles;
 
+    ///
+    /// \brief Если сейчас происходит вычисление - true, инчае false
+    ///
+    bool isCulculate = false;
+
+public slots:
+
+    ///
+    /// \brief Отображение поверхности и разблокировка работы с тайлами после расчётов
+    ///
+    void startDraw();
+
+    ///
+    /// \brief Функция блокировки работы с тайлами при расчётах
+    ///
+    void startCulc();
+
+
 public:
 
     ///
     /// \brief Отображение поверхности
     ///
-    void drawSurface(bool afterRain);
+    void drawSurface();
 
     ///
     /// \brief Событие нажатия на поверхность
@@ -67,7 +91,7 @@ public:
     /// \param Сцена для рисования
     /// \param Поверхность для отображения
     ///
-    SurfaceView(QGraphicsScene *scene, Surface *surface);
+    SurfaceView(QGraphicsScene *scene, Surface *surface, QLabel *txtTotal);
 };
 
 #endif // SURFACEVIEW_H

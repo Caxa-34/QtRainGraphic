@@ -54,6 +54,11 @@ void Surface::randSurface() {
     createNeighbors();
 }
 
+std::vector<std::vector<Tile *> > Surface::getTiles()
+{
+    return tiles;
+}
+
 void Surface::setTile(int x, int y, int heightTile) {
     if (x >= width || y >= height) {
         return;
@@ -204,9 +209,12 @@ bool Surface::calculateWater(Tile* currentTile, std::vector<Tile*> *tilesPath) {
     return false;
 }
 
-std::vector<std::vector<Tile*>> Surface::getSurface(bool afterRain) {
+void Surface::culculateSurface(bool afterRain) {
+    emit culcSurfaceStart();
+
     getValues();
     if (afterRain) calculate();
-    return tiles;
+
+    emit culcSurfaceFinish();
 }
 

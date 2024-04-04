@@ -69,39 +69,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="139"/>
-        <source>Итого воды: </source>
+        <location filename="mainwindow.cpp" line="149"/>
+        <source>Готово!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="163"/>
+        <location filename="mainwindow.cpp" line="149"/>
+        <source>Поверхность расчитана!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="186"/>
         <source>Без имени</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="166"/>
-        <location filename="mainwindow.cpp" line="177"/>
+        <location filename="mainwindow.cpp" line="189"/>
+        <location filename="mainwindow.cpp" line="201"/>
         <source>Ошибка</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="166"/>
+        <location filename="mainwindow.cpp" line="189"/>
         <source>Ошибка записи в базу данных!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="169"/>
+        <location filename="mainwindow.cpp" line="192"/>
         <source>Успех</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="169"/>
+        <location filename="mainwindow.cpp" line="192"/>
         <source>Поверхность была записана!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="177"/>
+        <location filename="mainwindow.cpp" line="201"/>
         <source>Ошибка получения поверхности!</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SurfaceView</name>
+    <message>
+        <location filename="surfaceview.cpp" line="47"/>
+        <source>Итого воды: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

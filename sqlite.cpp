@@ -77,7 +77,7 @@ int Sqlite::saveIntoDB(QString name) {
     tileQuery.prepare("INSERT INTO Tile (surfaceId, x, y, height) "
                       "VALUES (:surfaceId, :x, :y, :height)");
 
-    tiles = surface->getSurface(false);
+    tiles = surface->getTiles();
 
     for (int i = 0; i < surface->width; ++i) {
         for (int j = 0; j < surface->height; ++j) {

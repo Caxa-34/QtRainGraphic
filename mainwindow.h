@@ -134,5 +134,11 @@ private:
     /// \brief Отображение поверхности
     ///
     void showSurface(bool afterRain);
+
+    ///
+    /// \brief Заадёт элементам интерфейса активность
+    /// \param Значение активности
+    ///
+    void setEnabled(bool enabled);
 };
 #endif // MAINWINDOW_H

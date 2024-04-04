@@ -11,8 +11,9 @@
 ///
 /// \brief Класс поверхности
 ///
-class Surface
+class Surface : public QObject
 {
+    Q_OBJECT
 private:
     ///
     /// \brief Тайлы поверхности
@@ -64,6 +65,18 @@ private:
     /// \param Начальная У координата части
     ///
     void calculatePart(int x, int y, int widthPart, int heightPart);
+
+signals:
+
+    ///
+    /// \brief Сигнал который возникает при завершении расчётов
+    ///
+    void culcSurfaceFinish();
+
+    ///
+    /// \brief Сигнал который возникает при начале расчётов
+    ///
+    void culcSurfaceStart();
 
 public:
 
@@ -118,13 +131,6 @@ public:
     void setTile(int x, int y, int height);
 
     ///
-    /// \brief Функция получения поверхности
-    /// \param Тип получения данных, если true - после дождя, false - до дождя
-    /// \return Возвращает двумерный массив тайлов
-    ///
-    std::vector<std::vector<Tile*>> getSurface(bool afterRain);
-
-    ///
     /// \brief Функция для установки высоты поверхности
     /// \param Высота поверхности
     ///
@@ -147,6 +153,18 @@ public:
     /// \brief Задает случайные высоты тайлам поверхности
     ///
     void randSurface();
+
+    ///
+    /// \brief Функция получения поверхности с тайлами
+    /// \return Поверхность тайлов
+    ///
+    std::vector<std::vector<Tile*>> getTiles();
+
+    ///
+    /// \brief Функция расчёта поверхности и её отображение
+    /// \param Тип получения данных, если true - после дождя, false - до дождя
+    ///
+    void culculateSurface(bool afterRain);
 };
 
 

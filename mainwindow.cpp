@@ -12,9 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene;
     listSave = ui->listSave;
     sqlite = new Sqlite(surface, listSave);
-    surfaceView = new SurfaceView(scene, surface);
-
-    //connect(this, &MainWindow::showSurface, surfaceView, &SurfaceView::drawSurface);
+    surfaceView = new SurfaceView(scene, surface, ui->txtTotal);
 
     ui->grSurface->setScene(scene);
     ui->grSurface->setTransformationAnchor(QGraphicsView::NoAnchor);
@@ -22,12 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // подключение обработчиков событий мыши
     ui->grSurface->viewport()->installEventFilter(this);
-    surfaceView->drawSurface(false);
     setVisibleTileData(false);
-
-    // нужно что бы нормально отрабатывал скейл, без появления прокрутки
-    QRectF sceneRect = ui->grSurface->sceneRect();
-    ui->grSurface->setSceneRect(sceneRect);
+    showSurface(false);
 }
 
 MainWindow::~MainWindow()
@@ -135,8 +129,37 @@ void MainWindow::on_spbHeight_valueChanged(int arg1) {
 }
 
 void MainWindow::showSurface(bool afterRain) {
-    surfaceView->drawSurface(afterRain);
-    if (afterRain) ui->txtTotal->setText( trUtf8("Итого воды: ") + QString::number(surface->totalWater));
+    setVisibleTileData(false);
+    surfaceView->drawSurface();
+    setEnabled(false);
+
+    QFuture<void> future = QtConcurrent::run([this, afterRain] {
+        surface->culculateSurface(afterRain);
+    });
+
+    // отображение после расчётов, что бы не возникали ошибки
+    QFutureWatcher<void> *watcher = new QFutureWatcher<void>();
+    connect(watcher, &QFutureWatcher<void>::finished, this, [this, afterRain, watcher] {
+        surfaceView->drawSurface();
+
+        // нужно что бы нормально отрабатывал скейл, без появления прокрутки
+        QRectF sceneRect = ui->grSurface->sceneRect();
+        ui->grSurface->setSceneRect(sceneRect);
+
+        if (afterRain) QMessageBox::information(this, trUtf8("Готово!"), trUtf8("Поверхность расчитана!"));
+        setEnabled(true);
+        watcher->deleteLater();
+    });
+    watcher->setFuture(future);
+}
+
+void MainWindow::setEnabled(bool enabled) {
+    ui->spbWidth->setEnabled(enabled);
+    ui->spbHeight->setEnabled(enabled);
+    ui->btnStart->setEnabled(enabled);
+    ui->btnRandom->setEnabled(enabled);
+    ui->btnSaveIntoDB->setEnabled(enabled);
+    ui->listSave->setEnabled(enabled);
 }
 
 void MainWindow::on_btnRandom_clicked() {
@@ -172,6 +195,7 @@ void MainWindow::on_btnSaveIntoDB_clicked()
 }
 
 void MainWindow::on_listSave_itemDoubleClicked(QListWidgetItem *item) {
+    setEnabled(false);
     int num = item->data(Qt::UserRole).toInt();
     if (!sqlite->getFromDB(num)) {
         QMessageBox::warning(this, trUtf8("Ошибка"), trUtf8("Ошибка получения поверхности!"));

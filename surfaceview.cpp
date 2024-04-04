@@ -1,15 +1,19 @@
 #include "surfaceview.h"
 
-SurfaceView::SurfaceView(QGraphicsScene *scene, Surface *surface)
+SurfaceView::SurfaceView(QGraphicsScene *scene, Surface *surface, QLabel *txtTotal)
 {
     this->scene = scene;
     this->surface = surface;
+    this->txtTotal = txtTotal;
     pen = QPen(Qt::black);
     pen.setWidth(1);
+
+    connect(surface, &Surface::culcSurfaceStart, this, &SurfaceView::startCulc);
+    connect(surface, &Surface::culcSurfaceFinish, this, &SurfaceView::startDraw);
 }
 
-void SurfaceView::drawSurface(bool afterRain) {
-    tiles = surface->getSurface(afterRain);
+void SurfaceView::drawSurface() {
+    tiles = surface->getTiles();
     scene->clear();
     scene->setSceneRect(scene->itemsBoundingRect());
     int density = 10;
@@ -40,12 +44,27 @@ void SurfaceView::drawSurface(bool afterRain) {
             //qDebug() << "Drawing tile" << i << j;
         }
     }
+    txtTotal->setText( trUtf8("Итого воды: ") + QString::number(surface->totalWater));
     //qDebug() << "End drawing!";
 }
 
+
+void SurfaceView::startDraw() {
+    isCulculate = false;
+}
+
+
+void SurfaceView::startCulc()
+{
+    isCulculate = true;
+}
+
+
 Tile* SurfaceView::getTile(QPointF point) {
-    drawSurface(false);
-    tiles = surface->getSurface(false);
+    if (isCulculate) return nullptr; // если происходит вычисление не обрабатывать нажатия на тайлы
+
+    drawSurface();
+    tiles = surface->getTiles();
     int x = point.x() / size;
     int y = point.y() / size;
     if (surface->width <= x || surface->height <= y) {
